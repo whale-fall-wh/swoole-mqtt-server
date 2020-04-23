@@ -1,5 +1,6 @@
 # swoole-mqtt-server
 
+基于 https://github.com/chdahuzi/mqtt-swoole-server 修改，实现了主题的通配符发布/订阅
 
 MQTT介绍 https://www.runoob.com/w3cnote/mqtt-intro.html
 
@@ -27,6 +28,7 @@ MQTT介绍 https://www.runoob.com/w3cnote/mqtt-intro.html
    
 
 ###### 注:   单层通配符和多层通配符只能用于订阅(subscribe)消息而不能用于发布(publish)消息，主题层级分隔符两种情况下均可使用。
+
 
 ######可以使用MQTT客户端测试
 ######MQTTfx 下载地址：http://mqttfx.bceapp.com/
