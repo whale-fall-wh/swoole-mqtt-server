@@ -1,0 +1,24 @@
+{
+    "name": "whale-fall-wh/swoole-mqtt-server",
+    "description": "swoole mqtt",
+    "type": "library",
+    "require": {
+        "php": ">=7.2",
+        "ext-swoole": ">=4.2"
+    },
+    "authors": [
+        {
+            "name": "whale-fall-wh",
+            "email": "wh970305@163.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "whaleFallWh\\SwooleMqttServer\\": "src/"
+        },
+        "files": [
+            "src/functions.php"
+        ]
+    }
+}
