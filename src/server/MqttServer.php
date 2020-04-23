@@ -1,8 +1,9 @@
 <?php
-namespace whaleFallWh\SwooleMqttServer;
+namespace whaleFallWh\SwooleMqttServer\Server;
 
 use Swoole\Server;
 use Exception;
+use whaleFallWh\SwooleMqttServer\Packet;
 
 class MqttServer {
 
@@ -41,8 +42,6 @@ class MqttServer {
         $this->server->on('connect', [$this, 'onConnect']);
         $this->server->on('receive', [$this, 'onReceive']);
         $this->server->on('close', [$this, 'onClose']);
-        $this->server->on('Task', [$this, 'onTask']);
-        $this->server->on('Finish', [$this, 'onFinish']);
         $this->server->start();
     }
 
@@ -121,8 +120,11 @@ class MqttServer {
         if (!$fds) {
             return;
         }
-        $json = json_encode(['cmd'=>'publish','fds'=>$fds,'data'=>$data]);
-        $this->server->task($json);
+        foreach ($fds as $fd) {
+            go(function () use ($fd, $data){
+                 $this->server->send($fd, $data);
+            });
+        }
     }
 
     private function subscribe($topic, $fd)
@@ -168,39 +170,6 @@ class MqttServer {
         $byte = intval($packageIdentifier%256);
         $data .= chr($byte);
         return $data;
-    }
-
-    /**
-     * @param Server $server
-     * @param        $worker_id
-     * @param        $task_id
-     * @param        $data
-     *
-     * @return mixed|void
-     */
-    public function onTask(Server $server, $worker_id, $task_id, $data)
-    {
-        $arr = json_decode($data, true);
-        if (!$arr) {
-            return;
-        }
-        $cmd = $arr['cmd'];
-        switch ($cmd) {
-            case 'publish':
-                $fds = $arr['fds'];
-                foreach ($fds as $k => $fd) {
-                    $server->send($fd, $arr['data']);
-                }
-                break;
-            default:
-                break;
-        }
-        return $server->finish($data);
-    }
-
-    public function onFinish(Server $server, $task_id, $data)
-    {
-        echo 'Task finished #' . $task_id . '  #' . $data . PHP_EOL;
     }
 
     public function onConnect(Server $server, $fd)

@@ -2,6 +2,12 @@
     "name": "whale-fall-wh/swoole-mqtt-server",
     "description": "swoole mqtt",
     "type": "library",
+    "keywords": [
+        "php",
+        "swoole",
+        "mqtt",
+        "server"
+    ],
     "require": {
         "php": ">=7.2",
         "ext-swoole": ">=4.2"

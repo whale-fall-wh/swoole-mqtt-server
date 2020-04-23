@@ -1,6 +1,8 @@
 <?php
 
-namespace whaleFallWh\SwooleMqttServer;
+
+namespace whaleFallWh\SwooleMqttServer\Server;
+
 
 class Client {
     private $fd;
