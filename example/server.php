@@ -1,13 +1,19 @@
 <?php
 
-namespace whaleFallWh\SwooleMqttServer;
+require_once __DIR__.'/../vendor/autoload.php';
 
+$config = [
+    'host' => '0.0.0.0',
+    'port' => 9501,
+    'username' => '',
+    'password' => '',
+    'callbacks' => [
 
-(new MqttServer('0.0.0.0', 9501))->start(
-    array(
-        'open_mqtt_protocol' => 1,
+    ],
+    'settings' => [
         'worker_num' => 1,
-        'log_file' => __DIR__.'/../runtime/log/swoole.log',
-        'log_level' => SWOOLE_LOG_INFO,
-    )
-);
+        'open_mqtt_protocol' => true,
+    ]
+];
+
+(new \whaleFallWh\SwooleMqttServer\Application($config)) -> run();
