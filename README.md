@@ -1,8 +1,9 @@
 # swoole-mqtt-server
 
-基于 https://github.com/chdahuzi/mqtt-swoole-server 修改，实现了主题的通配符发布/订阅
 
 MQTT介绍 https://www.runoob.com/w3cnote/mqtt-intro.html
+
+qos解析 https://www.jianshu.com/p/8b0291e8ee02
 
 匹配规则：
 
@@ -25,10 +26,9 @@ MQTT介绍 https://www.runoob.com/w3cnote/mqtt-intro.html
      比如: aaa/#   不但可以匹配aaa/bbb，还可以匹配aaa/bbb/ccc/ddd。  
      也就是说，多层通配符可以匹配符合通配符之前主题层级的所有子集主题。
      单独的#匹配所有的消息主题.
-   
+
 
 ###### 注:   单层通配符和多层通配符只能用于订阅(subscribe)消息而不能用于发布(publish)消息，主题层级分隔符两种情况下均可使用。
-
 
 ######可以使用MQTT客户端测试
 ######MQTTfx 下载地址：http://mqttfx.bceapp.com/
