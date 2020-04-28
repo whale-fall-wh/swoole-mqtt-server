@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace whaleFallWh\SwooleMqttServer\Server;
 
 use Swoole\Server;
@@ -27,6 +29,7 @@ class MqttServer {
     public function onReceive(Server $server, $fd, $reactor_id, $data)
     {
         $packet = MQTT::decode($data);
+//        var_dump($packet);
         switch ($packet['cmd']) {
             case MQTT::CMD_CONNECT:
                 ReceiveEvent::onConnect($server, $fd, $reactor_id, $packet);
@@ -66,7 +69,7 @@ class MqttServer {
 
     public function onClose(Server $server, $fd)
     {
-        echo "connection close: {$fd}" . PHP_EOL;
+        echo "连接断开: {$fd}" . PHP_EOL;
     }
 
     /**

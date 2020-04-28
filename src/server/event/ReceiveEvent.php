@@ -4,13 +4,14 @@ declare(strict_types=1);
 namespace whaleFallWh\SwooleMqttServer\Server\Event;
 
 use Swoole\Server;
-use whaleFallWh\SwooleMqttServer\Server\Message;
+use whaleFallWh\SwooleMqttServer\Server\Message\MessageStore;
 use whaleFallWh\SwooleMqttServer\Server\MqttServer;
 use whaleFallWh\SwooleMqttServer\Server\Protocol\MQTT;
 use whaleFallWh\SwooleMqttServer\SubscribeFds;
 
 class ReceiveEvent
 {
+
     /**
      * cmd = 1
      */
@@ -19,11 +20,11 @@ class ReceiveEvent
         $client_id = $packet['client_id'];
         echo "client_id($client_id) connect" . PHP_EOL;
         $server->send($fd, MQTT::encode(['cmd' => MQTT::CMD_CONNACK]));
-
     }
 
     /**
-     *  cmd = 3时 qos处理
+     * cmd = 3时 qos处理
+     *
      * @param Server $server
      * @param int $fd
      * @param int $reactor_id
@@ -31,18 +32,19 @@ class ReceiveEvent
      */
     public static function onPublish(Server $server, int $fd, int $reactor_id, array $packet)
     {
-        $topic = $packet['topic'];
-        $content = $packet['content'];
         $qos = $packet['qos'] ?? 0;
-        $allSubFds = SubscribeFds::instance()->getSubsribeFbsByTopic($topic);
+        $allSubFds = SubscribeFds::instance()->getSubsribeFbsByTopic($packet['topic']);
         foreach ($allSubFds as $subFd) {
-            go(function () use ($server, $subFd, $topic, $content, $qos){
+            go(function () use ($server, $subFd, $packet){
                 $messag_id = MqttServer::incrMessageId();
+                if ($packet['qos'] !== 0) {
+                    MessageStore::instance()->addMsgToStore($messag_id, $packet);
+                }
                 $server->send($subFd, MQTT::encode([
                     'cmd' => MQTT::CMD_PUBLISH,
-                    'topic' => $topic,
-                    'content' => $content,
-                    'qos' => $qos,
+                    'topic' => $packet['topic'],
+                    'content' => $packet['content'],
+                    'qos' => $packet['qos'],
                     'message_id' => $messag_id,
                 ]));
             });
@@ -67,6 +69,7 @@ class ReceiveEvent
 
     /**
      * cmd = 4
+     *
      * @param Server $server
      * @param int $fd
      * @param int $reactor_id
@@ -74,11 +77,12 @@ class ReceiveEvent
      */
     public static function onPuback(Server $server, int $fd, int $reactor_id, array $packet)
     {
-        //TODO 删除message store
+        MessageStore::instance()->delMsgFromStore($packet['message_id']);
     }
 
     /**
      * cmd = 5
+     *
      * @param Server $server
      * @param int $fd
      * @param int $reactor_id
@@ -94,6 +98,7 @@ class ReceiveEvent
 
     /**
      * cmd = 6
+     *
      * @param Server $server
      * @param int $fd
      * @param int $reactor_id
@@ -110,6 +115,7 @@ class ReceiveEvent
 
     /**
      * cmd = 7
+     *
      * @param Server $server
      * @param int $fd
      * @param int $reactor_id
@@ -117,11 +123,12 @@ class ReceiveEvent
      */
     public static function onPubcomp(Server $server, int $fd, int $reactor_id, array $packet)
     {
-        // TODO 删除message store
+        MessageStore::instance()->delMsgFromStore($packet['message_id']);
     }
 
     /**
      * cmd = 8
+     *
      * @param Server $server
      * @param int $fd
      * @param int $reactor_id
@@ -147,6 +154,7 @@ class ReceiveEvent
 
     /**
      * 10
+     *
      * @param Server $server
      * @param int $fd
      * @param int $reactor_id
@@ -163,6 +171,7 @@ class ReceiveEvent
 
     /**
      * cmd = 12
+     *
      * @param Server $server
      * @param int $fd
      * @param int $reactor_id
@@ -173,6 +182,14 @@ class ReceiveEvent
         $server->send($fd, MQTT::encode(['cmd' => MQTT::CMD_PINGRESP]));
     }
 
+    /**
+     * cmd = 14
+     *
+     * @param Server $server
+     * @param int $fd
+     * @param int $reactor_id
+     * @param array $packet
+     */
     public static function onDisconnect(Server $server, int $fd, int $reactor_id, array $packet)
     {
         //断开连接

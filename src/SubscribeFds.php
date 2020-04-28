@@ -14,6 +14,10 @@ class SubscribeFds
     {
     }
 
+    private function __clone()
+    {
+    }
+
     public static function instance()
     {
         if (! (self::$instance instanceof self)) {
