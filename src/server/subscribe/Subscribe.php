@@ -6,7 +6,7 @@ namespace whaleFallWh\SwooleMqttServer\Server\Subscribe;
 
 use whaleFallWh\SwooleMqttServer\Config;
 
-class SubscribeType
+class Subscribe
 {
     public static $subscribe;
 
@@ -26,7 +26,7 @@ class SubscribeType
                 self::$subscribe = RedisSubscribeFds::class;
                 break;
             default:
-                self::$subscribe = MemSubscribeFds::class;
+                self::$subscribe = $type;
                 break;
         }
     }

@@ -11,7 +11,7 @@ use whaleFallWh\SwooleMqttServer\Config;
 use whaleFallWh\SwooleMqttServer\Server\Event\ReceiveEvent;
 use whaleFallWh\SwooleMqttServer\Server\Message\MessageId;
 use whaleFallWh\SwooleMqttServer\Server\Protocol\MQTT;
-use whaleFallWh\SwooleMqttServer\Server\Subscribe\SubscribeType;
+use whaleFallWh\SwooleMqttServer\Server\Subscribe\Subscribe;
 use whaleFallWh\SwooleMqttServer\SubscribeFds;
 
 class MqttServer {
@@ -21,12 +21,11 @@ class MqttServer {
 
     public function __construct($config)
     {
-        $config['settings']['worker_num'] = 1;//多worker有进程隔离
         $config['settings']['task_enable_coroutine'] = 1;
         $configInstance = Config::getInstance($config);
         unset($config);
-        SubscribeType::init();
-        SubscribeType::$subscribe::instance()->clearFds();
+        Subscribe::init();
+        Subscribe::$subscribe::instance()->clearFds();
         $this->server = new Server($configInstance->get('host'), $configInstance->get('port'));
         $this->server->set($configInstance->get('settings'));
         $this->server->on('workerStart', [$this, 'onWorkerStart']);
@@ -106,6 +105,6 @@ class MqttServer {
     public function onShutdown(Server $server)
     {
         MessageId::instance()->saveMsgId();
-        SubscribeType::$subscribe::instance()->clearFds();
+        Subscribe::$subscribe::instance()->clearFds();
     }
 }

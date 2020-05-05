@@ -8,7 +8,7 @@ use whaleFallWh\SwooleMqttServer\Server\Message\MessageId;
 use whaleFallWh\SwooleMqttServer\Server\Message\MessageStore;
 use whaleFallWh\SwooleMqttServer\Server\MqttServer;
 use whaleFallWh\SwooleMqttServer\Server\Protocol\MQTT;
-use whaleFallWh\SwooleMqttServer\Server\Subscribe\SubscribeType;
+use whaleFallWh\SwooleMqttServer\Server\Subscribe\Subscribe;
 
 class ReceiveEvent
 {
@@ -34,7 +34,7 @@ class ReceiveEvent
     public static function onPublish(Server $server, int $fd, int $reactor_id, array $packet)
     {
         $qos = $packet['qos'] ?? 0;
-        $allSubFds = SubscribeType::$subscribe::instance()->getSubscribeFbsByTopic($packet['topic']);
+        $allSubFds = Subscribe::$subscribe::instance()->getSubscribeFbsByTopic($packet['topic']);
         foreach ($allSubFds as $subFd) {
             go(function () use ($server, $subFd, $packet){
                 $messag_id = MessageId::instance()->incr();
@@ -148,7 +148,7 @@ class ReceiveEvent
                         'codes' => [],
                         'message_id' => $packet['message_id'] ,
                     ]));
-                SubscribeType::$subscribe::instance()->sub((string)$topic, $fd);
+                Subscribe::$subscribe::instance()->sub((string)$topic, $fd);
             }
         }
     }
@@ -163,7 +163,7 @@ class ReceiveEvent
      */
     public static function onUnsubscribe(Server $server, int $fd, int $reactor_id, array $packet)
     {
-        $instance = SubscribeType::$subscribe::instance();
+        $instance = Subscribe::$subscribe::instance();
         $topics = $packet['topics'];
         foreach ($topics as $topic) {
             $instance->unSub((string)$topic, $fd);
