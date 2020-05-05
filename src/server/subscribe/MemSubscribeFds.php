@@ -2,10 +2,14 @@
 declare(strict_types=1);
 
 
-namespace whaleFallWh\SwooleMqttServer;
+namespace whaleFallWh\SwooleMqttServer\Server\Subscribe;
 
-class SubscribeFds
+class MemSubscribeFds implements SubscribeInterface
 {
+    /**
+     * 存在内存中，仅适用于单个worker，多个worker时会有内存隔离的异常
+     * @var array
+     */
     private $subscribeFds = [];
 
     private static $instance;
@@ -20,7 +24,7 @@ class SubscribeFds
 
     public static function instance()
     {
-        if (! (self::$instance instanceof self)) {
+        if (!(self::$instance instanceof self)) {
             self::$instance = new self();
         }
         return self::$instance;
@@ -36,12 +40,12 @@ class SubscribeFds
         unset($this->subscribeFds[$topic][$fd]);
     }
 
-    public function getSubcribeFbs()
+    public function getSubscribeFbs(): array
     {
         return $this->subscribeFds;
     }
 
-    public function getSubsribeFbsByTopic($topic)
+    public function getSubscribeFbsByTopic(string $topic): array
     {
         $fds = [];
         $topics = array_keys($this->subscribeFds);
@@ -57,4 +61,8 @@ class SubscribeFds
         return $fds;
     }
 
+    public function clearFds()
+    {
+        $this->subscribeFds = [];
+    }
 }

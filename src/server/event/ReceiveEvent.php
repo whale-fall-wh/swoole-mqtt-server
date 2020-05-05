@@ -4,10 +4,11 @@ declare(strict_types=1);
 namespace whaleFallWh\SwooleMqttServer\Server\Event;
 
 use Swoole\Server;
+use whaleFallWh\SwooleMqttServer\Server\Message\MessageId;
 use whaleFallWh\SwooleMqttServer\Server\Message\MessageStore;
 use whaleFallWh\SwooleMqttServer\Server\MqttServer;
 use whaleFallWh\SwooleMqttServer\Server\Protocol\MQTT;
-use whaleFallWh\SwooleMqttServer\SubscribeFds;
+use whaleFallWh\SwooleMqttServer\Server\Subscribe\SubscribeType;
 
 class ReceiveEvent
 {
@@ -33,10 +34,10 @@ class ReceiveEvent
     public static function onPublish(Server $server, int $fd, int $reactor_id, array $packet)
     {
         $qos = $packet['qos'] ?? 0;
-        $allSubFds = SubscribeFds::instance()->getSubsribeFbsByTopic($packet['topic']);
+        $allSubFds = SubscribeType::$subscribe::instance()->getSubscribeFbsByTopic($packet['topic']);
         foreach ($allSubFds as $subFd) {
             go(function () use ($server, $subFd, $packet){
-                $messag_id = MqttServer::incrMessageId();
+                $messag_id = MessageId::instance()->incr();
                 if ($packet['qos'] !== 0) {
                     MessageStore::instance()->addMsgToStore($messag_id, $packet);
                 }
@@ -147,7 +148,7 @@ class ReceiveEvent
                         'codes' => [],
                         'message_id' => $packet['message_id'] ,
                     ]));
-                    SubscribeFds::instance()->sub($topic, $fd);
+                SubscribeType::$subscribe::instance()->sub((string)$topic, $fd);
             }
         }
     }
@@ -162,10 +163,10 @@ class ReceiveEvent
      */
     public static function onUnsubscribe(Server $server, int $fd, int $reactor_id, array $packet)
     {
-        $instance = SubscribeFds::instance();
+        $instance = SubscribeType::$subscribe::instance();
         $topics = $packet['topics'];
         foreach ($topics as $topic) {
-            $instance->unSub($topic, $fd);
+            $instance->unSub((string)$topic, $fd);
         }
     }
 
