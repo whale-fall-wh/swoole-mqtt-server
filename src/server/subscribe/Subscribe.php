@@ -8,13 +8,13 @@ use whaleFallWh\SwooleMqttServer\Config;
 
 class Subscribe
 {
+    /** @var $subscribe SubscribeInterface */
     public static $subscribe;
 
     public static function init()
     {
         $config = Config::getInstance()->get('subscribe', []);
         $type = $config['type'] ?? '';
-        echo $type . PHP_EOL;
         switch ($type) {
             case '':
                 self::$subscribe = MemSubscribeFds::class;
@@ -30,4 +30,5 @@ class Subscribe
                 break;
         }
     }
+
 }

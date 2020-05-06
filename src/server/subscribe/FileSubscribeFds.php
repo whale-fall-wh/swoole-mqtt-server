@@ -49,7 +49,7 @@ class FileSubscribeFds implements SubscribeInterface
         });
     }
 
-    public function getSubscribeFbs($path=''): array
+    public function getSubscribeFds($path=''): array
     {
         $subscribeFds=[];
         $p = $path ? scandir($this->filePath. $path . '/') : scandir($this->filePath);
@@ -66,10 +66,10 @@ class FileSubscribeFds implements SubscribeInterface
         return $subscribeFds;
     }
 
-    public function getSubscribeFbsByTopic(string $topic): array
+    public function getSubscribeFdsByTopic(string $topic): array
     {
         $fds = [];
-        $subscribeFds = $this->getSubscribeFbs();
+        $subscribeFds = $this->getSubscribeFds();
 //        var_dump($subscribeFds);
         $topics = array_keys($subscribeFds);
         foreach ($topics as $item) {

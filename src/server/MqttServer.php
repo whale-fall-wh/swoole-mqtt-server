@@ -8,11 +8,12 @@ use Swoole\Server;
 use Swoole\Server\Task;
 use Exception;
 use whaleFallWh\SwooleMqttServer\Config;
+use whaleFallWh\SwooleMqttServer\Libs\Redis\RedisPool;
 use whaleFallWh\SwooleMqttServer\Server\Event\ReceiveEvent;
 use whaleFallWh\SwooleMqttServer\Server\Message\MessageId;
 use whaleFallWh\SwooleMqttServer\Server\Protocol\MQTT;
 use whaleFallWh\SwooleMqttServer\Server\Subscribe\Subscribe;
-use whaleFallWh\SwooleMqttServer\SubscribeFds;
+
 
 class MqttServer {
 
@@ -21,11 +22,11 @@ class MqttServer {
 
     public function __construct($config)
     {
+        \Co::set(['hook_flags' => SWOOLE_HOOK_ALL | SWOOLE_HOOK_CURL]);
         $config['settings']['task_enable_coroutine'] = 1;
-        $configInstance = Config::getInstance($config);
-        unset($config);
+        $configInstance = Config::getInstance($config); unset($config);
         Subscribe::init();
-        Subscribe::$subscribe::instance()->clearFds();
+            Subscribe::$subscribe::instance()->clearFds();
         $this->server = new Server($configInstance->get('host'), $configInstance->get('port'));
         $this->server->set($configInstance->get('settings'));
         $this->server->on('workerStart', [$this, 'onWorkerStart']);
@@ -59,7 +60,6 @@ class MqttServer {
     public function onReceive(Server $server, $fd, $reactor_id, $data)
     {
         $packet = MQTT::decode($data);
-//        var_dump($packet);
         switch ($packet['cmd']) {
             case MQTT::CMD_CONNECT:
                 ReceiveEvent::onConnect($server, $fd, $reactor_id, $packet);
@@ -105,6 +105,5 @@ class MqttServer {
     public function onShutdown(Server $server)
     {
         MessageId::instance()->saveMsgId();
-        Subscribe::$subscribe::instance()->clearFds();
     }
 }

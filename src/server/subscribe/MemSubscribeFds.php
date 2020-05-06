@@ -40,12 +40,12 @@ class MemSubscribeFds implements SubscribeInterface
         unset($this->subscribeFds[$topic][$fd]);
     }
 
-    public function getSubscribeFbs(): array
+    public function getSubscribeFds(): array
     {
         return $this->subscribeFds;
     }
 
-    public function getSubscribeFbsByTopic(string $topic): array
+    public function getSubscribeFdsByTopic(string $topic): array
     {
         $fds = [];
         $topics = array_keys($this->subscribeFds);

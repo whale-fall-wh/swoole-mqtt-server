@@ -34,7 +34,7 @@ class ReceiveEvent
     public static function onPublish(Server $server, int $fd, int $reactor_id, array $packet)
     {
         $qos = $packet['qos'] ?? 0;
-        $allSubFds = Subscribe::$subscribe::instance()->getSubscribeFbsByTopic($packet['topic']);
+        $allSubFds = Subscribe::$subscribe::instance()->getSubscribeFdsByTopic($packet['topic']);
         foreach ($allSubFds as $subFd) {
             go(function () use ($server, $subFd, $packet){
                 $messag_id = MessageId::instance()->incr();

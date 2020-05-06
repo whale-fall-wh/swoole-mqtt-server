@@ -7,7 +7,10 @@ namespace whaleFallWh\SwooleMqttServer\Server\Subscribe;
 interface SubscribeInterface
 {
 
-    public static function instance() ;
+    /**
+     * @return static
+     */
+    public static function instance();
     /**
      * 订阅
      * @param string $topic
@@ -28,14 +31,14 @@ interface SubscribeInterface
      * 获取所有的订阅关系
      * @return array
      */
-    public function getSubscribeFbs(): array;
+    public function getSubscribeFds(): array;
 
     /**
      * 通过主题获取所有的fd
      * @param string $topic
      * @return array
      */
-    public function getSubscribeFbsByTopic(string $topic): array;
+    public function getSubscribeFdsByTopic(string $topic): array;
 
     public function clearFds();
 }
