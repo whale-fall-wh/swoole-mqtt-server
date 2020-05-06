@@ -65,4 +65,14 @@ class MemSubscribeFds implements SubscribeInterface
     {
         $this->subscribeFds = [];
     }
+
+    public function clearFdsByfd(int $fd)
+    {
+        $subscribeFds = $this->subscribeFds;
+        foreach ($subscribeFds as $topic) {
+            if (isset($topic[$fd])) {
+                unset($topic[$fd]);
+            }
+        }
+    }
 }

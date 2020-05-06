@@ -193,6 +193,7 @@ class ReceiveEvent
      */
     public static function onDisconnect(Server $server, int $fd, int $reactor_id, array $packet)
     {
+        echo $fd . '断开连接'. PHP_EOL;
         //断开连接
     }
 

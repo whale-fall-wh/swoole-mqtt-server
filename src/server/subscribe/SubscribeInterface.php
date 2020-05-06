@@ -41,4 +41,6 @@ interface SubscribeInterface
     public function getSubscribeFdsByTopic(string $topic): array;
 
     public function clearFds();
+
+    public function clearFdsByfd(int $fd);
 }

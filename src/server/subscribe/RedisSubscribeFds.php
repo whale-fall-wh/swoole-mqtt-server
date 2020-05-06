@@ -85,6 +85,18 @@ class RedisSubscribeFds implements SubscribeInterface
         });
     }
 
+    public function clearFdsByfd(int $fd)
+    {
+        $redis = RedisPool::instance()->get();
+        $allTopics = $redis->keys($this->subPrefix . '*');
+        foreach ($allTopics as $key) {
+            if ($redis->sIsMember($key, $fd)) {
+                $redis->sRem($key, $fd);
+            }
+        }
+        RedisPool::instance()->put($redis);
+    }
+
     private function getKeyByTopic(string $topic): string
     {
         return $this->subPrefix . $topic;

@@ -99,4 +99,21 @@ class FileSubscribeFds implements SubscribeInterface
         $p = $this->filePath;
         deldir($p);
     }
+
+    public function clearFdsByfd(int $fd)
+    {
+        $p = scandir($this->filePath);
+        foreach ($p as $val) {
+            if($val == '.' || $val == '..') {
+                continue;
+            }
+            if(!is_dir($this->filePath.$val)){
+                continue;
+            }
+            if (!is_file($this->filePath.$val.$fd)) {
+                continue;
+            }
+            unlink($this->filePath.$val.$fd);
+        }
+    }
 }
