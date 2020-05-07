@@ -9,7 +9,7 @@ use Exception;
 use whaleFallWh\SwooleMqttServer\Config;
 use whaleFallWh\SwooleMqttServer\Server\Event\ReceiveEvent;
 use whaleFallWh\SwooleMqttServer\Server\Message\MessageId;
-use whaleFallWh\SwooleMqttServer\Server\Protocol\MQTT;
+use whaleFallWh\SwooleMqttServer\Protocol\MQTT;
 use whaleFallWh\SwooleMqttServer\Server\Subscribe\Subscribe;
 
 

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace whaleFallWh\SwooleMqttServer\Server\Protocol;
+namespace whaleFallWh\SwooleMqttServer\Protocol;
 
 /**
  * Mqtt Protocol.

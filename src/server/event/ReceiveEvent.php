@@ -7,7 +7,7 @@ use Swoole\Server;
 use whaleFallWh\SwooleMqttServer\Server\Message\MessageId;
 use whaleFallWh\SwooleMqttServer\Server\Message\MessageStore;
 use whaleFallWh\SwooleMqttServer\Server\MqttServer;
-use whaleFallWh\SwooleMqttServer\Server\Protocol\MQTT;
+use whaleFallWh\SwooleMqttServer\Protocol\MQTT;
 use whaleFallWh\SwooleMqttServer\Server\Subscribe\Subscribe;
 
 class ReceiveEvent

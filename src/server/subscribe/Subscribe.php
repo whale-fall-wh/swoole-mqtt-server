@@ -8,6 +8,10 @@ use whaleFallWh\SwooleMqttServer\Config;
 
 class Subscribe
 {
+    const TYPE_MEM = 'mem';
+    const TYPE_FILE = 'file';
+    const TYPE_REDIS = 'redis';
+
     /** @var $subscribe SubscribeInterface */
     public static $subscribe;
 
@@ -16,13 +20,13 @@ class Subscribe
         $config = Config::getInstance()->get('subscribe', []);
         $type = $config['type'] ?? '';
         switch ($type) {
-            case '':
+            case self::TYPE_MEM:
                 self::$subscribe = MemSubscribeFds::class;
                 break;
-            case 'file':
+            case self::TYPE_FILE:
                 self::$subscribe = FileSubscribeFds::class;
                 break;
-            case 'redis':
+            case self::TYPE_REDIS:
                 self::$subscribe = RedisSubscribeFds::class;
                 break;
             default:
