@@ -31,28 +31,25 @@ class RedisSubscribeFds implements SubscribeInterface
 
     public function sub(string $topic, int $fd)
     {
-        $redis = RedisPool::instance()->get();
+        $redis = RedisPool::instance()->getConnection();
         $redis->sAdd($this->getKeyByTopic($topic), $fd);
-        RedisPool::instance()->put($redis);
     }
 
     public function unSub(string $topic, int $fd)
     {
-        $redis = RedisPool::instance()->get();
+        $redis = RedisPool::instance()->getConnection();
         $redis->sRem($this->getKeyByTopic($topic), $fd);
-        RedisPool::instance()->put($redis);
     }
 
     public function getSubscribeFds(): array
     {
         $fds = [];
-        $redis = RedisPool::instance()->get();
+        $redis = RedisPool::instance()->getConnection();
         $allTopics = $redis->keys($this->subPrefix . '*');
         foreach ($allTopics as $key) {
             $topic = str_replace($this->subPrefix, '', $key);
             $fds[$topic] = $redis->sMembers($key);
         }
-        RedisPool::instance()->put($redis);
         return $fds;
     }
 
@@ -76,25 +73,23 @@ class RedisSubscribeFds implements SubscribeInterface
     public function clearFds()
     {
         \Co\run(function () {
-            $redis = RedisPool::instance()->get();
+            $redis = RedisPool::instance()->getConnection();
             $allTopics = $redis->keys($this->subPrefix . '*');
             foreach ($allTopics as $key) {
                 $redis->del($key);
             }
-            RedisPool::instance()->put($redis);
         });
     }
 
     public function clearFdsByfd(int $fd)
     {
-        $redis = RedisPool::instance()->get();
+        $redis = RedisPool::instance()->getConnection();
         $allTopics = $redis->keys($this->subPrefix . '*');
         foreach ($allTopics as $key) {
             if ($redis->sIsMember($key, $fd)) {
                 $redis->sRem($key, $fd);
             }
         }
-        RedisPool::instance()->put($redis);
     }
 
     private function getKeyByTopic(string $topic): string

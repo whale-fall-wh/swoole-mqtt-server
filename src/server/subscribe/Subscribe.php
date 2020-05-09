@@ -18,7 +18,7 @@ class Subscribe
     public static function init()
     {
         $config = Config::getInstance()->get('subscribe', []);
-        $type = $config['type'] ?? '';
+        $type = $config['type'] ?? self::TYPE_MEM;
         switch ($type) {
             case self::TYPE_MEM:
                 self::$subscribe = MemSubscribeFds::class;

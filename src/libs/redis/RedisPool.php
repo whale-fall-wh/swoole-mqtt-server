@@ -7,10 +7,7 @@ use Redis;
 use Swoole\Database\RedisConfig;
 use whaleFallWh\SwooleMqttServer\Config;
 
-/**
- * @method Redis get()
- * @method void put(Redis $connection)
- */
+
 class RedisPool extends \Swoole\ConnectionPool
 {
     /** @var RedisConfig */
@@ -59,5 +56,14 @@ class RedisPool extends \Swoole\ConnectionPool
             );
         }
         return self::$instance;
+    }
+
+    public function getConnection()
+    {
+        $redis = $this->get();
+        \Swoole\Coroutine::defer(function () use ($redis) {
+            $this->put($redis);
+        });
+        return $redis;
     }
 }

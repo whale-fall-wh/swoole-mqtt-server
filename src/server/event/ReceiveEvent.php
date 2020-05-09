@@ -9,6 +9,8 @@ use whaleFallWh\SwooleMqttServer\Server\Message\MessageStore;
 use whaleFallWh\SwooleMqttServer\Server\MqttServer;
 use whaleFallWh\SwooleMqttServer\Protocol\MQTT;
 use whaleFallWh\SwooleMqttServer\Server\Subscribe\Subscribe;
+use whaleFallWh\SwooleMqttServer\Server\Validate\Code;
+use whaleFallWh\SwooleMqttServer\Server\Validate\Validate;
 
 class ReceiveEvent
 {
@@ -19,6 +21,10 @@ class ReceiveEvent
     public static function onConnect(Server $server, int $fd, int $reactor_id, array $packet)
     {
         $client_id = $packet['client_id'];
+        if (!Validate::checkAuth($packet['username'], $packet['password'])) {
+            $server->send($fd, MQTT::encode(['cmd' => MQTT::CMD_CONNACK, 'code' => Code::CODE_4]));
+            return;
+        }
         echo "client_id($client_id) connect" . PHP_EOL;
         $server->send($fd, MQTT::encode(['cmd' => MQTT::CMD_CONNACK]));
     }
