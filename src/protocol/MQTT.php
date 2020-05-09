@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  *
- * @license  https://github.com/try-to/swoole_mqtt/blob/master/LICENSE
+ * @link    https://github.com/walkor/mqtt/blob/master/src/Protocols/Mqtt.php
  */
 namespace whaleFallWh\SwooleMqttServer\Protocol;
 
@@ -12,7 +12,6 @@ namespace whaleFallWh\SwooleMqttServer\Protocol;
  * Mqtt Protocol.
  */
 class MQTT
-
 {
 
     /**
